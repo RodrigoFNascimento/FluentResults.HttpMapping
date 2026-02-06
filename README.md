@@ -96,11 +96,11 @@ Rules are evaluated **in order**. The first rule that matches produces the HTTP 
 
 > First match wins!
 
-### Matching by error type
+### Matching by reason type
 
 ```csharp
 mapper
-    .WhenError<NotFoundError>()
+    .WhenReason<NotFoundError>()
     .Map(_ => Results.StatusCode(StatusCodes.Status404NotFound));
 ```
 
@@ -109,7 +109,7 @@ mapper
 
 ```csharp
 mapper
-    .WhenError<ValidationError>()
+    .WhenReason<ValidationError>()
     .Problem(p => p.WithValidationProblem<ValidationError>(
         e => e.Errors
     ));
@@ -124,7 +124,7 @@ Headers are defined **parallel to mapping**, not inside the body logic:
 
 ```csharp
 mapper
-    .WhenError<SecurityError>()
+    .WhenReason<SecurityError>()
     .WithHeader("WWW-Authenticate", "Bearer")
     .Map(ctx => Results.Json(
         new
@@ -138,11 +138,11 @@ mapper
 
 ### Matching by metadata
 
-Rules can match errors by metadata keys or values:
+Rules can match reasons by metadata keys or values:
 
 ```csharp
 mapper
-    .WhenErrorWithMetadata<Error>("error-codes")
+    .WhenReasonWithMetadata<Error>("error-codes")
     .Problem(p => p
         .WithStatus(System.Net.HttpStatusCode.InternalServerError)
         .WithTitle("An internal server error occurred.")
@@ -191,11 +191,11 @@ A complete example configuration:
 builder.Services.AddHttpResultMapping(mapper =>
 {
     mapper
-        .WhenError<ValidationError>()
+        .WhenReason<ValidationError>()
         .Problem(p => p.WithValidationProblem<ValidationError>(e => e.Errors));
 
     mapper
-        .WhenError<SecurityError>()
+        .WhenReason<SecurityError>()
         .WithHeader("WWW-Authenticate", "Bearer")
         .Map(ctx => Results.Json(
             new
@@ -206,11 +206,11 @@ builder.Services.AddHttpResultMapping(mapper =>
         ));
 
     mapper
-        .WhenError<NotFoundError>()
+        .WhenReason<NotFoundError>()
         .Map(_ => Results.StatusCode(StatusCodes.Status404NotFound));
 
     mapper
-        .WhenErrorWithMetadata<Error>("error-codes")
+        .WhenReasonWithMetadata<Error>("error-codes")
         .Problem(p => p
             .WithStatus(System.Net.HttpStatusCode.InternalServerError)
             .WithTitle("An internal server error occurred.")

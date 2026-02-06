@@ -12,11 +12,11 @@ builder.Services.AddOpenApi();
 builder.Services.AddHttpResultMapping(mapper =>
 {
     mapper
-        .WhenError<ValidationError>()
+        .WhenReason<ValidationError>()
         .Problem(p => p.WithValidationProblem<ValidationError>(e => e.Errors));
 
     mapper
-        .WhenError<SecurityError>()
+        .WhenReason<SecurityError>()
         .WithHeader("WWW-Authenticate", "Bearer")
         .Map(ctx => Results.Json(
             new
@@ -27,11 +27,11 @@ builder.Services.AddHttpResultMapping(mapper =>
         );
 
     mapper
-        .WhenError<NotFoundError>()
+        .WhenReason<NotFoundError>()
         .Map(p => Results.StatusCode(StatusCodes.Status404NotFound));
 
     mapper
-        .WhenErrorWithMetadata<Error>("error-codes")
+        .WhenReasonWithMetadata<Error>("error-codes")
         .Problem(p => p
             .WithStatus(System.Net.HttpStatusCode.InternalServerError)
             .WithTitle("An internal server error occured.")

@@ -48,111 +48,111 @@ public sealed partial class HttpResultMappingBuilder
 
     /// <summary>
     /// Starts a rule that matches when the result contains at least one
-    /// error of type <typeparamref name="TError"/>.
+    /// reason of type <typeparamref name="TReason"/>.
     /// </summary>
-    /// <typeparam name="TError">
-    /// The error type to match.
+    /// <typeparam name="TReason">
+    /// The reason type to match.
     /// </typeparam>
     /// <returns>
     /// A <see cref="RuleBuilder"/> used to define the HTTP mapping
-    /// for the matched error.
+    /// for the matched reason.
     /// </returns>
-    public RuleBuilder WhenError<TError>()
-        where TError : IError
+    public RuleBuilder WhenReason<TReason>()
+        where TReason : IReason
     {
-        return WhenError<TError>(_ => true);
+        return WhenReason<TReason>(_ => true);
     }
 
     /// <summary>
     /// Starts a rule that matches when the result contains at least one
-    /// error of type <typeparamref name="TError"/> that satisfies
+    /// reason of type <typeparamref name="TReason"/> that satisfies
     /// the given predicate.
     /// </summary>
-    /// <typeparam name="TError">
-    /// The error type to match.
+    /// <typeparam name="TReason">
+    /// The reason type to match.
     /// </typeparam>
     /// <param name="predicate">
-    /// A predicate used to further filter errors of type
-    /// <typeparamref name="TError"/>.
+    /// A predicate used to further filter reasons of type
+    /// <typeparamref name="TReason"/>.
     /// </param>
     /// <returns>
     /// A <see cref="RuleBuilder"/> used to define the HTTP mapping
-    /// for the matched error.
+    /// for the matched reason.
     /// </returns>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="predicate"/> is <c>null</c>.
     /// </exception>
-    public RuleBuilder WhenError<TError>(
-        Func<TError, bool> predicate)
-        where TError : IError
+    public RuleBuilder WhenReason<TReason>(
+        Func<TReason, bool> predicate)
+        where TReason : IReason
     {
         if (predicate is null)
             throw new ArgumentNullException(nameof(predicate));
 
-        return WhenFailure(error =>
-            error is TError typedError &&
-            predicate(typedError));
+        return When(ctx =>
+            ctx.Reasons.Any(reason => reason is TReason typedReason &&
+            predicate(typedReason)));
     }
 
     /// <summary>
-    /// Starts a rule that matches when the result contains an error of type
-    /// <typeparamref name="TError"/> with the specified metadata key.
+    /// Starts a rule that matches when the result contains a reason of type
+    /// <typeparamref name="TReason"/> with the specified metadata key.
     /// </summary>
-    /// <typeparam name="TError">
-    /// The error type to match.
+    /// <typeparam name="TReason">
+    /// The reason type to match.
     /// </typeparam>
     /// <param name="key">
-    /// The metadata key that must be present on the error.
+    /// The metadata key that must be present on the reason.
     /// </param>
     /// <returns>
     /// A <see cref="RuleBuilder"/> used to define the HTTP mapping
-    /// for the matched error.
+    /// for the matched reason.
     /// </returns>
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="key"/> is <c>null</c>, empty,
     /// or consists only of whitespace.
     /// </exception>
-    public RuleBuilder WhenErrorWithMetadata<TError>(string key)
-        where TError : IError
+    public RuleBuilder WhenReasonWithMetadata<TReason>(string key)
+        where TReason : IReason
     {
         if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Metadata key cannot be null or empty.", nameof(key));
 
-        return WhenError<TError>(e =>
+        return WhenReason<TReason>(e =>
             e.Metadata.ContainsKey(key));
     }
 
     /// <summary>
-    /// Starts a rule that matches when the result contains an error of type
-    /// <typeparamref name="TError"/> with the specified metadata key
+    /// Starts a rule that matches when the result contains a reason of type
+    /// <typeparamref name="TReason"/> with the specified metadata key
     /// and value.
     /// </summary>
-    /// <typeparam name="TError">
-    /// The error type to match.
+    /// <typeparam name="TReason">
+    /// The reason type to match.
     /// </typeparam>
     /// <param name="key">
-    /// The metadata key that must be present on the error.
+    /// The metadata key that must be present on the reason.
     /// </param>
     /// <param name="value">
     /// The expected metadata value.
     /// </param>
     /// <returns>
     /// A <see cref="RuleBuilder"/> used to define the HTTP mapping
-    /// for the matched error.
+    /// for the matched reason.
     /// </returns>
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="key"/> is <c>null</c>, empty,
     /// or consists only of whitespace.
     /// </exception>
-    public RuleBuilder WhenErrorWithMetadata<TError>(
+    public RuleBuilder WhenReasonWithMetadata<TReason>(
         string key,
         string value)
-        where TError : IError
+        where TReason : IReason
     {
         if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Metadata key cannot be null or empty.", nameof(key));
 
-        return WhenError<TError>(e =>
+        return WhenReason<TReason>(e =>
             e.Metadata.TryGetValue(key, out var metadataValue) &&
             string.Equals(
                 metadataValue?.ToString(),
@@ -161,12 +161,12 @@ public sealed partial class HttpResultMappingBuilder
     }
 
     /// <summary>
-    /// Starts a rule that matches when the result contains an error of type
-    /// <typeparamref name="TError"/> whose metadata value satisfies
+    /// Starts a rule that matches when the result contains a reason of type
+    /// <typeparamref name="TReason"/> whose metadata value satisfies
     /// the given predicate.
     /// </summary>
-    /// <typeparam name="TError">
-    /// The error type to match.
+    /// <typeparam name="TReason">
+    /// The reason type to match.
     /// </typeparam>
     /// <param name="key">
     /// The metadata key to inspect.
@@ -176,7 +176,7 @@ public sealed partial class HttpResultMappingBuilder
     /// </param>
     /// <returns>
     /// A <see cref="RuleBuilder"/> used to define the HTTP mapping
-    /// for the matched error.
+    /// for the matched reason.
     /// </returns>
     /// <exception cref="ArgumentException">
     /// Thrown when <paramref name="key"/> is <c>null</c>, empty,
@@ -185,10 +185,10 @@ public sealed partial class HttpResultMappingBuilder
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="predicate"/> is <c>null</c>.
     /// </exception>
-    public RuleBuilder WhenErrorWithMetadata<TError>(
+    public RuleBuilder WhenReasonWithMetadata<TReason>(
         string key,
         Func<object?, bool> predicate)
-        where TError : IError
+        where TReason : IReason
     {
         if (string.IsNullOrWhiteSpace(key))
             throw new ArgumentException("Metadata key cannot be null or empty.", nameof(key));
@@ -196,7 +196,7 @@ public sealed partial class HttpResultMappingBuilder
         if (predicate is null)
             throw new ArgumentNullException(nameof(predicate));
 
-        return WhenError<TError>(e =>
+        return WhenReason<TReason>(e =>
             e.Metadata.TryGetValue(key, out var metadataValue) &&
             predicate(metadataValue));
     }
@@ -243,9 +243,7 @@ public sealed partial class HttpResultMappingBuilder
     /// for successful results.
     /// </returns>
     public RuleBuilder WhenSuccess()
-    {
-        return When(ctx => ctx.Result.IsSuccess);
-    }
+        => When(ctx => ctx.Result.IsSuccess);
 
     /// <summary>
     /// Builds the immutable rule set from the configured rules.
