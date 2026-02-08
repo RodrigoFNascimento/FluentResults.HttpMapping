@@ -90,7 +90,7 @@ public sealed partial class HttpResultMappingBuilder
             throw new ArgumentNullException(nameof(predicate));
 
         return When(ctx =>
-            ctx.Reasons.Any(reason => reason is TReason typedReason &&
+            ctx.Result.Reasons.Any(reason => reason is TReason typedReason &&
             predicate(typedReason)));
     }
 

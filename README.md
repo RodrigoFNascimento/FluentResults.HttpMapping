@@ -130,7 +130,7 @@ mapper
         new
         {
             error = "invalid_token",
-            error_description = ctx.FirstReason<SecurityError>().Message
+            error_description = ctx.Result.FirstReason<SecurityError>().Message
         }
     ));
 ```
@@ -147,9 +147,9 @@ mapper
         .WithStatus(System.Net.HttpStatusCode.InternalServerError)
         .WithTitle("An internal server error occurred.")
         .WithDetail(ctx =>
-            ctx.FirstReasonWithMetadata<Error>("error-codes").Message)
+            ctx.Result.FirstReasonWithMetadata<Error>("error-codes").Message)
         .WithExtension("error-codes", ctx =>
-            ctx.GetMetadata("error-codes"))
+            ctx.Result.GetMetadata("error-codes"))
     );
 ```
 
@@ -201,7 +201,7 @@ builder.Services.AddHttpResultMapping(mapper =>
             new
             {
                 error = "invalid_token",
-                error_description = ctx.FirstReason<SecurityError>().Message
+                error_description = ctx.Result.FirstReason<SecurityError>().Message
             }
         ));
 
@@ -215,9 +215,9 @@ builder.Services.AddHttpResultMapping(mapper =>
             .WithStatus(System.Net.HttpStatusCode.InternalServerError)
             .WithTitle("An internal server error occurred.")
             .WithDetail(ctx =>
-                ctx.FirstReasonWithMetadata<Error>("error-codes").Message)
+                ctx.Result.FirstReasonWithMetadata<Error>("error-codes").Message)
             .WithExtension("error-codes", ctx =>
-                ctx.GetMetadata("error-codes"))
+                ctx.Result.GetMetadata("error-codes"))
         );
 
     mapper

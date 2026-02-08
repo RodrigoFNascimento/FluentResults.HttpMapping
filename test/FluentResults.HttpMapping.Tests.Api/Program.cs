@@ -1,6 +1,7 @@
 using FluentResults;
 using FluentResults.HttpMapping;
 using FluentResults.HttpMapping.Execution;
+using FluentResults.HttpMapping.Extensions;
 using FluentResults.HttpMapping.Tests.Api.Reasons;
 using Microsoft.AspNetCore.Mvc;
 using Scalar.AspNetCore;
@@ -22,21 +23,21 @@ builder.Services.AddHttpResultMapping(mapper =>
             new
             {
                 Error = "invalid_token",
-                Error_description = ctx.FirstReason<SecurityError>().Message
+                Error_description = ctx.Result.FirstReason<SecurityError>().Message
             })
         );
 
     mapper
         .WhenReason<NotFoundError>()
-        .Map(p => Results.StatusCode(StatusCodes.Status404NotFound));
+        .Map(ctx => Results.StatusCode(StatusCodes.Status404NotFound));
 
     mapper
         .WhenReasonWithMetadata<Error>("error-codes")
         .Problem(p => p
             .WithStatus(System.Net.HttpStatusCode.InternalServerError)
             .WithTitle("An internal server error occured.")
-            .WithDetail(ctx => ctx.FirstReasonWithMetadata<Error>("error-codes").Message)
-            .WithExtension("error-codes", ctx => ctx.GetMetadata("error-codes"))
+            .WithDetail(ctx => ctx.Result.FirstReasonWithMetadata<Error>("error-codes").Message)
+            .WithExtension("error-codes", ctx => ctx.Result.GetMetadata("error-codes"))
         );
 
     mapper
