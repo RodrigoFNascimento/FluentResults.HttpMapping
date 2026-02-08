@@ -1,6 +1,4 @@
-﻿using FluentResults;
-
-namespace FluentResults.HttpMapping.Tests.Api.Reasons;
+﻿namespace FluentResults.HttpMapping.Tests.Api.Reasons;
 
 public sealed class ValidationError : Error
 {
