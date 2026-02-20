@@ -298,3 +298,11 @@ It is a **mapping layer** — nothing more, nothing less.
 - Zero HTTP concerns in your domain layer;
 
 If you already use **FluentResults**, this package lets your HTTP layer finally match the same level of clarity.
+
+
+## Supporting
+
+If this project helped you, you can support it:
+
+- GitHub Sponsors: https://github.com/sponsors/RodrigoFNascimento
+- Ko-fi: https://ko-fi.com/rodrigofnascimento
